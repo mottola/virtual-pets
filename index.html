@@ -3,11 +3,118 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Virtual Pet</title>
+    <title>Document</title>
 </head>
 
 <body>
+    <div id="pets"></div>
 
+    <div>
+        <input type="text" id="newPetName">
+        <button id="newPet">Create Pet</button>
+    </div>
+
+    <script>
+        function Model() {
+            this.pets = [];
+        }
+
+        function Controller(model) {
+
+            function Pet(name) {
+                this.name = name;
+                this.food = 10;
+
+                this.feed = function () {
+                    this.food += 1;
+                    console.log(this);
+                }
+
+                this.play = function () {
+                    this.food -= 1;
+                }
+            }
+
+            this.feedPets = function () {
+                for (var i = 0; i < model.pets.length; i++) {
+                    model.pets[i].feed();
+                }
+            }
+
+            this.getAllPets = function () {
+                return model.pets;
+            }
+
+            this.createPet = function (name, view) {
+                var newPetName = new Pet(name);
+                model.pets.push(newPetName);
+                var feedBtn = document.createElement("BUTTON"); // Create a <button> element
+                feedBtn.id = name; // give the feedBtn element an ID so we can target it
+                feedBtn.onclick = function () {
+                    console.log("CLICKED");
+                    newPetName.feed();
+                    view.showAllPets();
+                }
+                var playBtn = document.createElement("BUTTON"); // Create a <button> element
+                playBtn.id = name; // give the feedBtn element an ID so we can target it
+                playBtn.onclick = function () {
+                    console.log("CLICKED");
+                    newPetName.play();
+                    view.showAllPets();
+                }
+
+                var feedMessage = document.createTextNode("Feed " + name + "!!"); // Create a text node
+                feedBtn.appendChild(feedMessage); // Append the text to <button>
+                document.body.appendChild(feedBtn);
+
+                var playMessage = document.createTextNode("Play with " + name + "!!"); // Create a text node
+                playBtn.appendChild(playMessage); // Append the text to <button>
+                document.body.appendChild(playBtn)
+            }
+        }
+
+        function View(controller) {
+            this.showAllPets = function () {
+                var world = document.getElementById("pets");
+                world.innerHTML = "";
+                for (var i = 0; i < controller.getAllPets().length; i++) {
+                    this.showPet(i);
+                }
+            }
+
+            this.showPet = function (index) {
+                var world = document.getElementById("pets");
+                var pet = controller.getAllPets()[index];
+                var p = document.createElement("div");
+                p.className = "pet";
+                p.innerHTML = pet.name + " -- " + pet.food;
+                world.appendChild(p);
+            }
+
+            this.createPet = function () {
+                var petName = document.getElementById("newPetName").value;
+                controller.createPet(petName, this);
+                this.showAllPets();
+            }
+        }
+        var m = new Model();
+        var c = new Controller(m);
+        var v = new View(c);
+
+        document.getElementById("newPet").onclick = function () {
+            v.createPet();
+        }
+
+        v.showAllPets();
+
+        /**
+        	Todo: Add a button to each pet which allows you to feed it and another button which allows you to play with it. Make sure that you are only feeding / playing with that one pet.
+        	Todo: Add a button to feed all of your pets
+        	Todo: Implement functionality which removes any pets whose food goes below 0 (they run away!)
+        	
+        	Also: If you want, add other features to this program to show off to the class tomorrow.
+        **/
+    </script>
 </body>
 
 </html>
